@@ -39,6 +39,7 @@ func main() {
 		// set 'q' to quit the app as well (aside from ctrl-c)
 		switch event.Rune() {
 		case 'q':
+			event = nil
 			app.Stop()
 		}
 		return event
