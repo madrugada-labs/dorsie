@@ -1,4 +1,4 @@
-module github.com/madrugada-labs/dorsie.git
+module github.com/madrugada-labs/dorsie
 
 go 1.18
 
