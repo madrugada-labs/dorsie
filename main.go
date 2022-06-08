@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 	"os/signal"
 
@@ -16,12 +15,9 @@ const dorsieVersion = "0.0.1"
 
 func main() {
 	// load some critical components
+	filterSettings := NewFilterSettings()
 	client := graphql.NewClient("https://persico.fly.dev/graphql", nil)
 	dataFetcher := NewDataFetcher(client)
-	jobsView, err := dataFetcher.GetJobsPublic()
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	app := tview.NewApplication()
 
@@ -41,12 +37,16 @@ func main() {
 		case 'q':
 			event = nil
 			app.Stop()
+		case 'b':
+			event = nil
+			drawMainPage(app, dataFetcher, filterSettings)
 		}
 		return event
 	})
 
 	// run!
-	if err := app.SetRoot(jobsView, true).SetFocus(jobsView).Run(); err != nil {
+	drawMainPage(app, dataFetcher, filterSettings)
+	if err := app.Run(); err != nil {
 		panic(err)
 	}
 }
