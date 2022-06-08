@@ -4,13 +4,13 @@ go 1.18
 
 require (
 	github.com/dustin/go-humanize v1.0.0
+	github.com/gdamore/tcell/v2 v2.4.1-0.20210905002822-f057f0a857a1
 	github.com/hasura/go-graphql-client v0.7.0
 	github.com/rivo/tview v0.0.0-20220307222120-9994674d60a8
 )
 
 require (
 	github.com/gdamore/encoding v1.0.0 // indirect
-	github.com/gdamore/tcell/v2 v2.4.1-0.20210905002822-f057f0a857a1 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/klauspost/compress v1.10.3 // indirect
