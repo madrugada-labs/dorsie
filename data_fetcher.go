@@ -39,7 +39,7 @@ func (df *DataFetcher) GetJobsPublic(filterSettings *FilterSettings) (*tview.Lis
 		// copy the job.ID variable to avoid the GO gotcha :) in for loops: https://kkentzo.github.io/2021/01/21/golang-loop-variable-gotcha/
 		jobID := job.ID.(string)
 		jobsListUI = jobsListUI.AddItem(
-			fmt.Sprintf("[::b] [%s - %s USD][-:-:-] %s @ %s", humanize.Comma(int64(job.MaxSalary)), humanize.Comma(int64(job.MaxSalary)), job.Title, job.Company.Name),
+			fmt.Sprintf("[::b] [%s - %s USD][-:-:-] %s @ %s", humanize.Comma(int64(job.MinSalary)), humanize.Comma(int64(job.MaxSalary)), job.Title, job.Company.Name),
 			fmt.Sprintf("[green::]%s[-:-:-], [blue::]%s[-:-:-]", job.Experience, job.Field),
 			'+',
 			func() {
