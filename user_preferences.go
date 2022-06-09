@@ -40,6 +40,7 @@ func (up *UserPreferences) CreatePreferencesFile() error {
 		return err
 	}
 
+	// if the file does not exist, then it creates it with the current state
 	up.preferencesPath = filepath.Join(newpath, "preferences.json")
 	_, err = os.Stat(filepath.Join(up.preferencesPath))
 	if errors.Is(err, os.ErrNotExist) {

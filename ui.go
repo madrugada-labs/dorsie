@@ -10,6 +10,27 @@ import (
 )
 
 func drawMainPage(app *tview.Application, dataFetcher *DataFetcher, filterSettings *FilterSettings, userPreferences *UserPreferences) {
+
+	logo := tview.NewTextView().
+		SetText(`
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@(    (@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@&(((((@@@@@@
+@@@@@@@@@@@@@@@@@@@(    (@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@&(((((((((@@@@@@
+@@@@@@@@@@@@@@@@@@@(    (@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@&(((((((((((@@@@@@
+@@@@@@@@@*        ((    (@@@@@@,          &@@@@@@     @,    @@@@           &@@@@@@@@,         .@@@@@@##(##&@@@@%##@@@@@@
+@@@@@@@                 (@@@&                @@@@           @@     /@@@(     %@@@&      #@%      %@@%###@@@@@@@@@@%%%@@@
+@@@@@@     %@@@@@@@     (@@%     @@@@@@@@     @@@      @@@@@@@     &@@@@@@@@@@@@&     @@@@@@@&    (@%%%%@@@@@@@@@###%@@@
+@@@@@&     @@@@@@@@%    (@@     %@@@@@@@@.    &@@     @@@@@@@@&             (@@@                   @@@@##%@@@@@#####@@@@
+@@@@@@     @@@@@@@@     (@@*    ,@@@@@@@@     @@@     @@@@@@@@@@@@@@@@&(      @@/    ,@@@@@@@@@@@@@@@@@###########&@@@@@
+@@@@@@&      @@@@/      (@@@.     /@@@@      &@@@     @@@@@@@#     @@@@@@     @@@.     @@@@@(     @@@@@#########&@@@@@@@
+@@@@@@@@*          &    (@@@@@.            %@@@@@     @@@@@@@@@.            /@@@@@@.            &@@@@@@#####&@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	`).
+		SetTextAlign(tview.AlignCenter)
+
+	comment := tview.NewTextView().
+		SetText(`browse jobs from the confort of your terminal ^.^`).
+		SetTextAlign(tview.AlignCenter)
 	form := tview.NewForm().
 		AddButton("See Jobs", func() {
 			jobsView, err := dataFetcher.GetJobsPublic(filterSettings)
@@ -20,8 +41,17 @@ func drawMainPage(app *tview.Application, dataFetcher *DataFetcher, filterSettin
 		}).
 		AddButton("Config", func() {
 			drawConfigPage(app, filterSettings, userPreferences)
-		})
-	app.SetRoot(form, true).SetFocus(form)
+		}).SetButtonsAlign(1)
+
+	grid := tview.NewGrid().
+		SetRows(3, 0, 3).
+		SetColumns(30, 0, 30).
+		SetBorders(false).
+		AddItem(logo, 1, 0, 5, 3, 0, 0, false).
+		AddItem(comment, 6, 0, 4, 3, 0, 0, false).
+		AddItem(form, 10, 0, 1, 3, 0, 0, true)
+
+	app.SetRoot(grid, true).SetFocus(grid)
 }
 
 func drawConfigPage(app *tview.Application, filterSettings *FilterSettings, userPreferences *UserPreferences) {
