@@ -4,8 +4,12 @@ type FilterSettings struct {
 	MinSalary int
 }
 
-func NewFilterSettings() *FilterSettings {
+func NewFilterSettings(userPreferences *UserPreferences) *FilterSettings {
 	return &FilterSettings{
-		MinSalary: 0,
+		MinSalary: userPreferences.state.MinSalary,
 	}
+}
+
+func (fs *FilterSettings) UpdateFilters(userPreferences *UserPreferences) {
+	fs.MinSalary = userPreferences.state.MinSalary
 }
