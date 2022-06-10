@@ -4,7 +4,6 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/gdamore/tcell/v2"
 	"github.com/hasura/go-graphql-client"
 	"github.com/rivo/tview"
 )
@@ -38,20 +37,8 @@ func main() {
 
 	// UI showtime
 	app := tview.NewApplication()
-	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		// set 'q' to quit the app as well (aside from ctrl-c)
-		switch event.Rune() {
-		case 'q':
-			event = nil
-			app.Stop()
-		case 'b':
-			event = nil
-			drawMainPage(app, dataFetcher, filterSettings, userPreferences)
-		}
-		return event
-	})
-
-	drawMainPage(app, dataFetcher, filterSettings, userPreferences)
+	mainPage := drawMainPage(app, dataFetcher, filterSettings, userPreferences)
+	app.SetRoot(mainPage, true).SetFocus(mainPage)
 
 	// crl-c handler - quit the app
 	c := make(chan os.Signal, 1)

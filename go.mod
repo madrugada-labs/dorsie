@@ -6,6 +6,7 @@ require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/gdamore/tcell/v2 v2.4.1-0.20210905002822-f057f0a857a1
 	github.com/hasura/go-graphql-client v0.7.0
+	github.com/lithammer/fuzzysearch v1.1.5
 	github.com/rivo/tview v0.0.0-20220307222120-9994674d60a8
 )
 
@@ -19,7 +20,7 @@ require (
 	github.com/rivo/uniseg v0.2.0 // indirect
 	golang.org/x/sys v0.0.0-20210809222454-d867a43fc93e // indirect
 	golang.org/x/term v0.0.0-20210220032956-6a3ed077a48d // indirect
-	golang.org/x/text v0.3.6 // indirect
+	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	nhooyr.io/websocket v1.8.7 // indirect

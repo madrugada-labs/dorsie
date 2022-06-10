@@ -7,9 +7,7 @@ import (
 	"os/exec"
 	"runtime"
 
-	"github.com/dustin/go-humanize"
 	"github.com/hasura/go-graphql-client"
-	"github.com/rivo/tview"
 )
 
 type DataFetcher struct {
@@ -20,7 +18,7 @@ func NewDataFetcher(client *graphql.Client) *DataFetcher {
 	return &DataFetcher{Client: client}
 }
 
-func (df *DataFetcher) GetJobsPublic(filterSettings *FilterSettings) (*tview.List, error) {
+func (df *DataFetcher) GetJobsPublic(filterSettings *FilterSettings) (JobsPublic, error) {
 	var query struct {
 		JobsPublic JobsPublic `graphql:"jobsPublic(filters:{minSalary:$minSalary})"`
 	}
@@ -34,20 +32,7 @@ func (df *DataFetcher) GetJobsPublic(filterSettings *FilterSettings) (*tview.Lis
 		// Handle error.
 		return nil, err
 	}
-	jobsListUI := tview.NewList()
-	for _, job := range query.JobsPublic {
-		// copy the job.ID variable to avoid the GO gotcha :) in for loops: https://kkentzo.github.io/2021/01/21/golang-loop-variable-gotcha/
-		jobID := job.ID.(string)
-		jobsListUI = jobsListUI.AddItem(
-			fmt.Sprintf("[::b] [%s - %s USD][-:-:-] %s @ %s", humanize.Comma(int64(job.MinSalary)), humanize.Comma(int64(job.MaxSalary)), job.Title, job.Company.Name),
-			fmt.Sprintf("[green::]%s[-:-:-], [blue::]%s[-:-:-]", job.Experience, job.Field),
-			'+',
-			func() {
-				openJob(jobID)
-			},
-		)
-	}
-	return jobsListUI, nil
+	return query.JobsPublic, nil
 
 }
 
