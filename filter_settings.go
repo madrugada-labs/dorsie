@@ -2,11 +2,13 @@ package main
 
 type FilterSettings struct {
 	MinSalary int
+	Fields    *[]FieldEnum
 }
 
 func NewFilterSettings(userPreferences *UserPreferences) *FilterSettings {
 	return &FilterSettings{
 		MinSalary: userPreferences.state.MinSalary,
+		Fields:    &userPreferences.state.Fields,
 	}
 }
 

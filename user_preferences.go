@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 )
@@ -15,7 +14,8 @@ type UserPreferences struct {
 }
 
 type UserPreferencesState struct {
-	MinSalary int `json:"minSalary"`
+	MinSalary int         `json:"minSalary"`
+	Fields    []FieldEnum `json:"fields"`
 }
 
 func NewUserPreferences() *UserPreferences {
@@ -45,7 +45,6 @@ func (up *UserPreferences) CreatePreferencesFile() error {
 	_, err = os.Stat(filepath.Join(up.preferencesPath))
 	if errors.Is(err, os.ErrNotExist) {
 		_, err = os.Create(filepath.Join(up.preferencesPath))
-		log.Println(up.state)
 		preferencesBytes, err := json.Marshal(up.state)
 		if err != nil {
 			return err
@@ -56,7 +55,7 @@ func (up *UserPreferences) CreatePreferencesFile() error {
 	return err
 }
 
-func (up *UserPreferences) LoadPreferences() (*UserPreferencesState, error) {
+func (up *UserPreferences) LoadPreferences(flags Flags) (*UserPreferencesState, error) {
 
 	jsonFile, err := os.Open(up.preferencesPath)
 	defer jsonFile.Close()
@@ -76,6 +75,15 @@ func (up *UserPreferences) LoadPreferences() (*UserPreferencesState, error) {
 		return nil, err
 	}
 	up.state = &ups
+
+	// update all non nil flags into config
+	if flags.MinSalary != nil && *flags.MinSalary > 0 {
+		up.state.MinSalary = *flags.MinSalary
+	}
+
+	if len(flags.Fields) > 0 {
+		up.state.Fields = flags.Fields
+	}
 
 	return &ups, nil
 }

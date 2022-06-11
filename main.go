@@ -3,6 +3,9 @@ package main
 import (
 	"os"
 	"os/signal"
+	"strings"
+
+	"flag"
 
 	"github.com/hasura/go-graphql-client"
 	"github.com/rivo/tview"
@@ -12,7 +15,31 @@ import (
 // with the server.
 const dorsieVersion = "0.0.1"
 
+var minSalary = flag.Int("minSalary", -1, "min salary for a role")
+var fields = flag.String("fields", "", "fields of interest separated by comma: engineering,marketing")
+
+type Flags struct {
+	MinSalary *int
+	Fields    []FieldEnum
+}
+
+func (f *Flags) UpdateFlags() {
+	f.MinSalary = minSalary
+	var fieldsArray []string
+	if fields != nil && *fields != "" {
+		fieldsArray = strings.Split(*fields, ",")
+	}
+	for _, field := range fieldsArray {
+		f.Fields = append(f.Fields, FieldEnum(field))
+	}
+}
+
 func main() {
+	flag.Parse()
+
+	flags := Flags{}
+	flags.UpdateFlags()
+
 	// load some critical components
 	userPreferences := NewUserPreferences()
 	client := graphql.NewClient("https://persico.fly.dev/graphql", nil)
@@ -23,7 +50,7 @@ func main() {
 		panic(err)
 	}
 
-	preferences, err := userPreferences.LoadPreferences()
+	preferences, err := userPreferences.LoadPreferences(flags)
 	if err != nil {
 		panic(err)
 	}

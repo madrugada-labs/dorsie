@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"strconv"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gdamore/tcell/v2"
@@ -40,11 +39,9 @@ func drawMainPage(app *tview.Application, dataFetcher *DataFetcher, filterSettin
 			if err != nil {
 				log.Fatal(err)
 			}
+			app.Sync()
 			app.SetRoot(jobsView, true).SetFocus(jobsView)
-		}).
-		AddButton("Config", func() {
-			drawConfigPage(app, filterSettings, userPreferences)
-		}).SetButtonsAlign(1)
+		}).SetButtonsAlign(1).SetButtonBackgroundColor(tcell.ColorBlue)
 
 	grid := tview.NewGrid().
 		SetRows(3, 0, 3).
@@ -55,32 +52,6 @@ func drawMainPage(app *tview.Application, dataFetcher *DataFetcher, filterSettin
 		AddItem(form, 10, 0, 1, 3, 0, 0, true)
 
 	return grid
-}
-
-func drawConfigPage(app *tview.Application, filterSettings *FilterSettings, userPreferences *UserPreferences) {
-	minSalary := filterSettings.MinSalary
-	form := tview.NewForm().
-		AddInputField("Min salary", fmt.Sprintf("%d", filterSettings.MinSalary), 20, nil, func(newMinSalary string) {
-			s, err := strconv.Atoi(newMinSalary)
-			if err != nil {
-				return
-			}
-			minSalary = s
-		}).
-		AddButton("Save", func() {
-			newState := UserPreferencesState{
-				MinSalary: minSalary,
-			}
-			userPreferences.PersistPreferences(&newState)
-			filterSettings.UpdateFilters(userPreferences)
-
-			app.QueueEvent(tcell.NewEventKey(0, 'b', 0))
-		}).
-		AddButton("Back", func() {
-			app.QueueEvent(tcell.NewEventKey(0, 'b', 0))
-		})
-
-	app.SetRoot(form, true).SetFocus(form)
 }
 
 func drawJobsView(app *tview.Application, jobsPublic JobsPublic) *tview.Grid {

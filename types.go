@@ -16,3 +16,9 @@ type Company struct {
 	ID   graphql.ID
 	Name graphql.String
 }
+
+type FieldEnum string
+
+const (
+	Engineering FieldEnum = "engineering"
+)

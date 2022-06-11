@@ -20,12 +20,14 @@ func NewDataFetcher(client *graphql.Client) *DataFetcher {
 
 func (df *DataFetcher) GetJobsPublic(filterSettings *FilterSettings) (JobsPublic, error) {
 	var query struct {
-		JobsPublic JobsPublic `graphql:"jobsPublic(filters:{minSalary:$minSalary})"`
+		JobsPublic JobsPublic `graphql:"jobsPublic(filters:{minSalary:$minSalary, fields:$fields})"`
 	}
 
 	variables := map[string]interface{}{
 		"minSalary": graphql.Int(filterSettings.MinSalary),
+		"fields":    filterSettings.Fields,
 	}
+
 	err := df.Client.Query(context.Background(), &query, variables)
 	if err != nil {
 		log.Println(err)
