@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"sync"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gdamore/tcell/v2"
@@ -10,7 +11,47 @@ import (
 	"github.com/rivo/tview"
 )
 
-func drawMainPage(app *tview.Application, dataFetcher *DataFetcher, filterSettings *FilterSettings, userPreferences *UserPreferences) *tview.Grid {
+type Screens struct {
+	m        sync.Mutex
+	MainPage *tview.Grid
+	JobView  *tview.Grid
+}
+
+func NewScreensManager() *Screens {
+	return &Screens{
+		m:        sync.Mutex{},
+		MainPage: nil,
+		JobView:  nil,
+	}
+}
+
+func (s *Screens) UpdateMainPage(newMainPage *tview.Grid) {
+	s.m.Lock()
+	s.MainPage = newMainPage
+	s.m.Unlock()
+}
+
+func (s *Screens) GetMainPage() *tview.Grid {
+	s.m.Lock()
+	mainPage := s.MainPage
+	s.m.Unlock()
+	return mainPage
+}
+
+func (s *Screens) UpdateJobView(newJobView *tview.Grid) {
+	s.m.Lock()
+	s.JobView = newJobView
+	s.m.Unlock()
+}
+
+func (s *Screens) GetJobsView() *tview.Grid {
+	s.m.Lock()
+	jobsView := s.JobView
+	s.m.Unlock()
+	return jobsView
+}
+
+func drawMainPage(app *tview.Application, screenManager *Screens, sender chan<- EventType, dataFetcher *DataFetcher, filterSettings *FilterSettings, userPreferences *UserPreferences) *tview.Grid {
 
 	logo := tview.NewTextView().
 		SetText(`
@@ -35,7 +76,8 @@ func drawMainPage(app *tview.Application, dataFetcher *DataFetcher, filterSettin
 	form := tview.NewForm().
 		AddButton("See Jobs", func() {
 			jobsPublic, err := dataFetcher.GetJobsPublic(filterSettings)
-			jobsView := drawJobsView(app, jobsPublic)
+			jobsView := drawJobsView(app, sender, jobsPublic)
+			screenManager.UpdateJobView(jobsView)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -51,10 +93,19 @@ func drawMainPage(app *tview.Application, dataFetcher *DataFetcher, filterSettin
 		AddItem(comment, 6, 0, 4, 3, 0, 0, false).
 		AddItem(form, 10, 0, 1, 3, 0, 0, true)
 
+	grid.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		switch event.Rune() {
+		case rune(tcell.KeyEscape), 'q':
+			app.Stop()
+			event = nil
+		}
+		return event
+	})
+
 	return grid
 }
 
-func drawJobsView(app *tview.Application, jobsPublic JobsPublic) *tview.Grid {
+func drawJobsView(app *tview.Application, sender chan<- EventType, jobsPublic JobsPublic) *tview.Grid {
 	// keep the original job list stored
 	allJobsPublic := make(JobsPublic, len(jobsPublic))
 	copy(allJobsPublic, jobsPublic)
@@ -70,11 +121,16 @@ func drawJobsView(app *tview.Application, jobsPublic JobsPublic) *tview.Grid {
 		AddItem(comment, 24, 0, 3, 3, 0, 0, false)
 
 	grid.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		// set 'q' to quit the app as well (aside from ctrl-c)
 		switch event.Rune() {
-		case rune(tcell.KeyTAB):
-			event = nil
-			app.SetFocus(comment)
+		case '/', 's':
+			if jobsListUI.HasFocus() {
+				event = nil
+				app.SetFocus(comment)
+			}
+		case 'b':
+			if !comment.HasFocus() {
+				sender <- GoToMainPage
+			}
 		}
 		return event
 	})
@@ -88,6 +144,7 @@ func drawJobsView(app *tview.Application, jobsPublic JobsPublic) *tview.Grid {
 			grid.AddItem(jobsListUI, 1, 0, 23, 3, 0, 0, false)
 			app.SetFocus(jobsListUI)
 			event = nil
+
 		}
 		return event
 	})

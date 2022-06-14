@@ -64,7 +64,15 @@ func main() {
 
 	// UI showtime
 	app := tview.NewApplication()
-	mainPage := drawMainPage(app, dataFetcher, filterSettings, userPreferences)
+
+	// start event listener
+	eventTypeChannel := make(chan EventType)
+
+	screenManager := NewScreensManager()
+	go StartEventLoop(app, screenManager, eventTypeChannel)
+
+	screenManager.UpdateMainPage(drawMainPage(app, screenManager, eventTypeChannel, dataFetcher, filterSettings, userPreferences))
+	mainPage := screenManager.GetMainPage()
 	app.SetRoot(mainPage, true).SetFocus(mainPage)
 
 	// crl-c handler - quit the app
