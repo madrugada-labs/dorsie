@@ -50,6 +50,9 @@ func (up *UserPreferences) CreatePreferencesFile() error {
 			return err
 		}
 		err = ioutil.WriteFile(up.preferencesPath, preferencesBytes, 0)
+		if err != nil {
+			return err 
+		}
 	}
 
 	return err
@@ -58,11 +61,11 @@ func (up *UserPreferences) CreatePreferencesFile() error {
 func (up *UserPreferences) LoadPreferences(flags Flags) (*UserPreferencesState, error) {
 
 	jsonFile, err := os.Open(up.preferencesPath)
-	defer jsonFile.Close()
-
+	
 	if err != nil {
 		return nil, err
 	}
+	defer jsonFile.Close()
 
 	var ups UserPreferencesState
 	jsonFileBytes, err := ioutil.ReadAll(jsonFile)

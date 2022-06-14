@@ -13,7 +13,6 @@ import (
 
 // set the dorsie version, to ensure that the client is up to date
 // with the server.
-const dorsieVersion = "0.0.1"
 
 var minSalary = flag.Int("minSalary", -1, "min salary for a role")
 var fields = flag.String("fields", "", "fields of interest separated by comma: engineering,marketing")
@@ -79,7 +78,7 @@ func main() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	go func() {
-		_ = <-c
+		<-c
 		app.Stop()
 	}()
 
