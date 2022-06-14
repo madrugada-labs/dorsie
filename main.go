@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"os/signal"
 	"strings"
@@ -16,14 +17,17 @@ import (
 
 var minSalary = flag.Int("minSalary", -1, "min salary for a role")
 var fields = flag.String("fields", "", "fields of interest separated by comma: engineering,marketing")
+var skipIntro = flag.Bool("skipIntro", false, "skip dorse's intro and go directly to jobs!")
 
 type Flags struct {
 	MinSalary *int
 	Fields    []FieldEnum
+	SkipIntro *bool
 }
 
 func (f *Flags) UpdateFlags() {
 	f.MinSalary = minSalary
+	f.SkipIntro = skipIntro
 	var fieldsArray []string
 	if fields != nil && *fields != "" {
 		fieldsArray = strings.Split(*fields, ",")
@@ -70,9 +74,25 @@ func main() {
 	screenManager := NewScreensManager()
 	go StartEventLoop(app, screenManager, eventTypeChannel)
 
-	screenManager.UpdateMainPage(drawMainPage(app, screenManager, eventTypeChannel, dataFetcher, filterSettings, userPreferences))
+	screenManager.UpdateMainPage(drawMainPage(app, screenManager, eventTypeChannel, dataFetcher, filterSettings))
+
+	jobsPublic, err := dataFetcher.GetJobsPublic(filterSettings)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	jobsView := drawJobsView(app, eventTypeChannel, jobsPublic)
+	screenManager.UpdateJobView(jobsView)
+
 	mainPage := screenManager.GetMainPage()
-	app.SetRoot(mainPage, true).SetFocus(mainPage)
+
+	if userPreferences.SkipIntroEnabled() {
+		jobsViewUI := screenManager.GetJobsView()
+		log.Println(jobsViewUI)
+		app.SetRoot(jobsViewUI, true).SetFocus(jobsViewUI)
+	} else {
+		app.SetRoot(mainPage, true).SetFocus(mainPage)
+	}
 
 	// crl-c handler - quit the app
 	c := make(chan os.Signal, 1)

@@ -11,6 +11,7 @@ import (
 type UserPreferences struct {
 	preferencesPath string
 	state           *UserPreferencesState
+	SkipIntro       bool
 }
 
 type UserPreferencesState struct {
@@ -24,7 +25,12 @@ func NewUserPreferences() *UserPreferences {
 		state: &UserPreferencesState{
 			MinSalary: 0,
 		},
+		SkipIntro: false,
 	}
+}
+
+func (up *UserPreferences) SkipIntroEnabled() bool {
+	return up.SkipIntro
 }
 
 // creates the preferences file only if it does not exist
@@ -51,7 +57,7 @@ func (up *UserPreferences) CreatePreferencesFile() error {
 		}
 		err = ioutil.WriteFile(up.preferencesPath, preferencesBytes, 0)
 		if err != nil {
-			return err 
+			return err
 		}
 	}
 
@@ -61,7 +67,7 @@ func (up *UserPreferences) CreatePreferencesFile() error {
 func (up *UserPreferences) LoadPreferences(flags Flags) (*UserPreferencesState, error) {
 
 	jsonFile, err := os.Open(up.preferencesPath)
-	
+
 	if err != nil {
 		return nil, err
 	}
@@ -86,6 +92,10 @@ func (up *UserPreferences) LoadPreferences(flags Flags) (*UserPreferencesState, 
 
 	if len(flags.Fields) > 0 {
 		up.state.Fields = flags.Fields
+	}
+
+	if flags.SkipIntro != nil && *flags.SkipIntro {
+		up.SkipIntro = *flags.SkipIntro
 	}
 
 	return &ups, nil

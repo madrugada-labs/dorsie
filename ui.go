@@ -51,8 +51,7 @@ func (s *Screens) GetJobsView() *tview.Grid {
 	return jobsView
 }
 
-func drawMainPage(app *tview.Application, screenManager *Screens, sender chan<- EventType, dataFetcher *DataFetcher, filterSettings *FilterSettings, userPreferences *UserPreferences) *tview.Grid {
-
+func drawMainPage(app *tview.Application, screenManager *Screens, sender chan<- EventType, dataFetcher *DataFetcher, filterSettings *FilterSettings) *tview.Grid {
 	logo := tview.NewTextView().
 		SetText(`
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -118,7 +117,7 @@ func drawJobsView(app *tview.Application, sender chan<- EventType, jobsPublic Jo
 		// SetColumns(30, 0, 30).
 		SetBorders(false).
 		AddItem(jobsListUI, 1, 0, 23, 3, 0, 0, true).
-		AddItem(comment, 24, 0, 3, 3, 0, 0, false)
+		AddItem(comment, 24, 0, 5, 3, 0, 0, false)
 
 	grid.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Rune() {
@@ -131,6 +130,10 @@ func drawJobsView(app *tview.Application, sender chan<- EventType, jobsPublic Jo
 			if !comment.HasFocus() {
 				sender <- GoToMainPage
 			}
+		case 'q':
+			if !comment.HasFocus() {
+				app.Stop()
+			}
 		}
 		return event
 	})
@@ -139,7 +142,11 @@ func drawJobsView(app *tview.Application, sender chan<- EventType, jobsPublic Jo
 		switch event.Rune() {
 		case rune(tcell.KeyEnter):
 			grid.RemoveItem(jobsListUI)
-			jobsPublic = filterJobsBasedOnSearch(comment.GetText(), allJobsPublic)
+			if comment.GetText() == "" {
+				jobsPublic = allJobsPublic
+			} else {
+				jobsPublic = filterJobsBasedOnSearch(comment.GetText(), allJobsPublic)
+			}
 			jobsListUI = drawJobListUI(jobsPublic)
 			grid.AddItem(jobsListUI, 1, 0, 23, 3, 0, 0, false)
 			app.SetFocus(jobsListUI)
