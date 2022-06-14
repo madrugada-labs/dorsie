@@ -10,14 +10,17 @@ import (
 	"github.com/hasura/go-graphql-client"
 )
 
+/// DataFetcher connects to Dorse's backend and retrieves data
 type DataFetcher struct {
 	Client *graphql.Client
 }
 
+/// NewDataFetcher is just a constructor for DataFetcher
 func NewDataFetcher(client *graphql.Client) *DataFetcher {
 	return &DataFetcher{Client: client}
 }
 
+/// GetJobsPublic hits the jobsPublic with several filters and returns the results (if available)
 func (df *DataFetcher) GetJobsPublic(filterSettings *FilterSettings) (JobsPublic, error) {
 	var query struct {
 		JobsPublic JobsPublic `graphql:"jobsPublic(filters:{minSalary:$minSalary, fields:$fields})"`
