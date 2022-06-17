@@ -11,12 +11,12 @@ import (
 type UserPreferences struct {
 	preferencesPath string
 	state           *UserPreferencesState
-	SkipIntro       bool
 }
 
 type UserPreferencesState struct {
 	MinSalary int         `json:"minSalary"`
 	Fields    []FieldEnum `json:"fields"`
+	SkipIntro bool        `json:"skipIntro"`
 }
 
 func NewUserPreferences() *UserPreferences {
@@ -24,13 +24,14 @@ func NewUserPreferences() *UserPreferences {
 		preferencesPath: "",
 		state: &UserPreferencesState{
 			MinSalary: 0,
+			Fields:    nil,
+			SkipIntro: false,
 		},
-		SkipIntro: false,
 	}
 }
 
 func (up *UserPreferences) SkipIntroEnabled() bool {
-	return up.SkipIntro
+	return up.state.SkipIntro
 }
 
 // creates the preferences file only if it does not exist
@@ -94,8 +95,15 @@ func (up *UserPreferences) LoadPreferences(flags Flags) (*UserPreferencesState, 
 		up.state.Fields = flags.Fields
 	}
 
-	if flags.SkipIntro != nil && *flags.SkipIntro {
-		up.SkipIntro = *flags.SkipIntro
+	switch *flags.SkipIntro {
+	case true:
+		ups.SkipIntro = true
+	case false:
+		if *flags.MinSalary != -1 || flags.Fields != nil {
+			ups.SkipIntro = true
+		} else {
+			ups.SkipIntro = false
+		}
 	}
 
 	return &ups, nil
