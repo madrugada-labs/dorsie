@@ -27,13 +27,20 @@ type Flags struct {
 
 func (f *Flags) UpdateFlags() {
 	f.MinSalary = minSalary
-	f.SkipIntro = skipIntro
 	var fieldsArray []string
 	if fields != nil && *fields != "" {
 		fieldsArray = strings.Split(*fields, ",")
 	}
 	for _, field := range fieldsArray {
 		f.Fields = append(f.Fields, FieldEnum(field))
+	}
+	f.SkipIntro = skipIntro
+	if f.SkipIntro != nil {
+		// if there's a flag enabled, we set skipIntro
+		if *f.MinSalary != -1 || f.Fields != nil {
+			t := true
+			f.SkipIntro = &t
+		}
 	}
 }
 
@@ -88,7 +95,6 @@ func main() {
 
 	if userPreferences.SkipIntroEnabled() {
 		jobsViewUI := screenManager.GetJobsView()
-		log.Println(jobsViewUI)
 		app.SetRoot(jobsViewUI, true).SetFocus(jobsViewUI)
 	} else {
 		app.SetRoot(mainPage, true).SetFocus(mainPage)
