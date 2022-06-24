@@ -7,11 +7,14 @@ require (
 	github.com/gdamore/tcell/v2 v2.4.1-0.20210905002822-f057f0a857a1
 	github.com/hasura/go-graphql-client v0.7.0
 	github.com/lithammer/fuzzysearch v1.1.5
+	github.com/madrugada-labs/mario-go v0.2.2
 	github.com/rivo/tview v0.0.0-20220307222120-9994674d60a8
 )
 
 require (
 	github.com/gdamore/encoding v1.0.0 // indirect
+	github.com/gdamore/tcell v1.4.0 // indirect
+	github.com/google/gxui v0.0.0-20151028112939-f85e0a97b3a4 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/klauspost/compress v1.10.3 // indirect

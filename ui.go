@@ -142,9 +142,13 @@ func drawJobsView(app *tview.Application, sender chan<- EventType, jobsPublic Jo
 		switch event.Rune() {
 		case rune(tcell.KeyEnter):
 			grid.RemoveItem(jobsListUI)
-			if comment.GetText() == "" {
+			switch comment.GetText() {
+			case "":
 				jobsPublic = allJobsPublic
-			} else {
+			case "mario bross":
+				jobsPublic = filterJobsBasedOnSearch(comment.GetText(), allJobsPublic)
+				sender <- MarioBross
+			default:
 				jobsPublic = filterJobsBasedOnSearch(comment.GetText(), allJobsPublic)
 			}
 			jobsListUI = drawJobListUI(jobsPublic)
