@@ -35,7 +35,7 @@ func (f *Flags) UpdateFlags() {
 		f.Fields = append(f.Fields, FieldEnum(field))
 	}
 	f.SkipIntro = skipIntro
-	if f.SkipIntro != nil {
+	if *f.SkipIntro != false {
 		// if there's a flag enabled, we set skipIntro
 		if *f.MinSalary != -1 || f.Fields != nil {
 			t := true
