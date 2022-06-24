@@ -19,6 +19,8 @@ type Company struct {
 
 type FieldEnum string
 
+type ExperienceEnum string
+
 const (
 	Engineering FieldEnum = "engineering"
 )

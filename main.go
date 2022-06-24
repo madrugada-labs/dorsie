@@ -17,12 +17,14 @@ import (
 
 var minSalary = flag.Int("minSalary", -1, "min salary for a role")
 var fields = flag.String("fields", "", "fields of interest separated by comma: engineering,marketing")
+var experiences = flag.String("experience", "early_career,mid_level,senior", "career experience separated by comma: early_career,mid_level,senior")
 var skipIntro = flag.Bool("skipIntro", false, "skip dorse's intro and go directly to jobs!")
 
 type Flags struct {
-	MinSalary *int
-	Fields    []FieldEnum
-	SkipIntro *bool
+	MinSalary   *int
+	Experiences []ExperienceEnum
+	Fields      []FieldEnum
+	SkipIntro   *bool
 }
 
 func (f *Flags) UpdateFlags() {
@@ -34,10 +36,18 @@ func (f *Flags) UpdateFlags() {
 	for _, field := range fieldsArray {
 		f.Fields = append(f.Fields, FieldEnum(field))
 	}
+
+	var experiencesArray []string
+	if experiences != nil && *experiences != "" {
+		experiencesArray = strings.Split(*experiences, ",")
+	}
+	for _, experience := range experiencesArray {
+		f.Experiences = append(f.Experiences, ExperienceEnum(experience))
+	}
 	f.SkipIntro = skipIntro
-	if *f.SkipIntro != false {
+	if *f.SkipIntro == false {
 		// if there's a flag enabled, we set skipIntro
-		if *f.MinSalary != -1 || f.Fields != nil {
+		if *f.MinSalary != -1 || f.Fields != nil || f.Experiences != nil {
 			t := true
 			f.SkipIntro = &t
 		}

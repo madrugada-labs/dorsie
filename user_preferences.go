@@ -14,18 +14,20 @@ type UserPreferences struct {
 }
 
 type UserPreferencesState struct {
-	MinSalary int         `json:"minSalary"`
-	Fields    []FieldEnum `json:"fields"`
-	SkipIntro bool        `json:"skipIntro"`
+	MinSalary   int              `json:"minSalary"`
+	Fields      []FieldEnum      `json:"fields"`
+	Experiences []ExperienceEnum `json:"experiences"`
+	SkipIntro   bool             `json:"skipIntro"`
 }
 
 func NewUserPreferences() *UserPreferences {
 	return &UserPreferences{
 		preferencesPath: "",
 		state: &UserPreferencesState{
-			MinSalary: 0,
-			Fields:    nil,
-			SkipIntro: false,
+			MinSalary:   0,
+			Fields:      nil,
+			Experiences: []ExperienceEnum{"early_career", "mid_level", "senior"},
+			SkipIntro:   false,
 		},
 	}
 }
@@ -89,6 +91,10 @@ func (up *UserPreferences) LoadPreferences(flags Flags) (*UserPreferencesState, 
 	// update all non nil flags into config
 	if flags.MinSalary != nil && *flags.MinSalary > 0 {
 		up.state.MinSalary = *flags.MinSalary
+	}
+
+	if len(flags.Experiences) > 0 {
+		up.state.Experiences = flags.Experiences
 	}
 
 	if len(flags.Fields) > 0 {
