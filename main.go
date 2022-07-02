@@ -69,8 +69,7 @@ func main() {
 
 	// load some critical components
 	userPreferences := NewUserPreferences()
-	// client := graphql.NewClient("https://persico.fly.dev/graphql", nil)
-	client := graphql.NewClient("http://localhost:8080/graphql", nil)
+	client := graphql.NewClient("https://persico.fly.dev/graphql", nil)
 	dataFetcher := NewDataFetcher(client)
 
 	err := userPreferences.CreatePreferencesFile()
