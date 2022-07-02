@@ -17,6 +17,7 @@ import (
 
 var minSalary = flag.Int("minSalary", -1, "min salary for a role")
 var fields = flag.String("fields", "", "fields of interest separated by comma: engineering,marketing")
+var skills = flag.String("skills", "", "fields of interest separated by comma: engineering,marketing")
 var experiences = flag.String("experience", "early_career,mid_level,senior", "career experience separated by comma: early_career,mid_level,senior")
 var skipIntro = flag.Bool("skipIntro", false, "skip dorse's intro and go directly to jobs!")
 
@@ -24,6 +25,7 @@ type Flags struct {
 	MinSalary   *int
 	Experiences []ExperienceEnum
 	Fields      []FieldEnum
+	Skills      []string
 	SkipIntro   *bool
 }
 
@@ -36,6 +38,11 @@ func (f *Flags) UpdateFlags() {
 	for _, field := range fieldsArray {
 		f.Fields = append(f.Fields, FieldEnum(field))
 	}
+	var skillsArray []string
+	if skills != nil && *skills != "" {
+		skillsArray = strings.Split(*skills, ",")
+	}
+	f.Skills = append(f.Skills, skillsArray...)
 
 	var experiencesArray []string
 	if experiences != nil && *experiences != "" {
@@ -45,7 +52,7 @@ func (f *Flags) UpdateFlags() {
 		f.Experiences = append(f.Experiences, ExperienceEnum(experience))
 	}
 	f.SkipIntro = skipIntro
-	if *f.SkipIntro == false {
+	if !*f.SkipIntro {
 		// if there's a flag enabled, we set skipIntro
 		if *f.MinSalary != -1 || f.Fields != nil || f.Experiences != nil {
 			t := true
@@ -62,7 +69,8 @@ func main() {
 
 	// load some critical components
 	userPreferences := NewUserPreferences()
-	client := graphql.NewClient("https://persico.fly.dev/graphql", nil)
+	// client := graphql.NewClient("https://persico.fly.dev/graphql", nil)
+	client := graphql.NewClient("http://localhost:8080/graphql", nil)
 	dataFetcher := NewDataFetcher(client)
 
 	err := userPreferences.CreatePreferencesFile()

@@ -10,6 +10,7 @@ type JobsPublic []struct {
 	MaxSalary  graphql.Int
 	Field      graphql.String
 	Experience graphql.String
+	JobSkills  []graphql.String
 }
 
 type Company struct {

@@ -16,6 +16,7 @@ type UserPreferences struct {
 type UserPreferencesState struct {
 	MinSalary   int              `json:"minSalary"`
 	Fields      []FieldEnum      `json:"fields"`
+	Skills      []string         `json:"skills"`
 	Experiences []ExperienceEnum `json:"experiences"`
 	SkipIntro   bool             `json:"skipIntro"`
 }
@@ -99,6 +100,10 @@ func (up *UserPreferences) LoadPreferences(flags Flags) (*UserPreferencesState, 
 
 	if len(flags.Fields) > 0 {
 		up.state.Fields = flags.Fields
+	}
+
+	if len(flags.Skills) > 0 {
+		up.state.Skills = flags.Skills
 	}
 
 	switch *flags.SkipIntro {

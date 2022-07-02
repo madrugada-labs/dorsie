@@ -6,6 +6,7 @@ type FilterSettings struct {
 	MinSalary   int
 	Experiences []ExperienceEnum
 	Fields      *[]FieldEnum
+	Skills      *[]string
 }
 
 /// NewFilterSettings creates a new FilterSettings
@@ -14,6 +15,7 @@ func NewFilterSettings(userPreferences *UserPreferences) *FilterSettings {
 		MinSalary:   userPreferences.state.MinSalary,
 		Experiences: userPreferences.state.Experiences,
 		Fields:      &userPreferences.state.Fields,
+		Skills:      &userPreferences.state.Skills,
 	}
 }
 

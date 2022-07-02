@@ -170,7 +170,7 @@ func drawJobListUI(jobsPublic JobsPublic) *tview.List {
 		jobID := job.ID.(string)
 		jobsListUI = jobsListUI.AddItem(
 			fmt.Sprintf("[::b] [%s - %s USD][-:-:-] %s @ %s", humanize.Comma(int64(job.MinSalary)), humanize.Comma(int64(job.MaxSalary)), job.Title, job.Company.Name),
-			fmt.Sprintf("[green::]%s[-:-:-], [blue::]%s[-:-:-]", job.Experience, job.Field),
+			fmt.Sprintf("[green::]%s[-:-:-], [blue::]%s[-:-:-], [orange::]%s[-:-:-]", job.Experience, job.Field, job.JobSkills),
 			'+',
 			func() {
 				openJob(jobID)
