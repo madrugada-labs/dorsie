@@ -17,7 +17,7 @@ import (
 
 var minSalary = flag.Int("minSalary", -1, "min salary for a role")
 var fields = flag.String("fields", "", "fields of interest separated by comma: engineering,marketing")
-var skills = flag.String("skills", "", "fields of interest separated by comma: engineering,marketing")
+var skills = flag.String("skills", "", "skills related to the job by comma: rust,go,solidity,cloud")
 var experiences = flag.String("experience", "early_career,mid_level,senior", "career experience separated by comma: early_career,mid_level,senior")
 var skipIntro = flag.Bool("skipIntro", false, "skip dorse's intro and go directly to jobs!")
 
